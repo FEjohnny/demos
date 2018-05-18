@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用css画三角形</title>
+</head>
+<body>
+<h3>画一个纯色三角</h3>
+<h5>先画一个有4个border的div</h5>
+<div style="width: 100px;height: 100px;
+            border-left: 50px solid #000;
+            border-right: 50px solid #333;
+            border-top: 50px solid #666;
+            border-bottom: 50px solid #999;"></div>
+
+<h5>然后去掉高度和宽度，剩4个border</h5>
+<div style="width: 0px;height: 0px;
+            border-left: 50px solid #000;
+            border-right: 50px solid #333;
+            border-top: 50px solid #666;
+            border-bottom: 50px solid #999;"></div>
+
+<h5>然后去掉border-top</h5>
+<div style="width: 0px;height: 0px;
+            border-left: 50px solid #000;
+            border-right: 50px solid #333;
+            border-bottom: 50px solid #999;"></div>
+
+<h5>然后把border-left和border-right变成透明色</h5>
+<div style="width: 0px;height: 0px;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 50px solid #999;"></div>
+
+<h5>上面画的是一个直角三角形，通过改变各个变的大小可以得到不同形状的三角形</h5>
+
+<h3>画一个有边缘色的三角形</h3>
+<h5>其实就是画两个三角形叠在一起,相差一个像素</h5>
+<div class="triangle"></div>
+<style>
+    .triangle{
+        width: 200px;
+        height: 100px;
+        border-radius: 10px;
+        position: relative;
+        border:1px solid #999999;
+        margin-bottom: 100px;
+    }
+    .triangle:before{
+        content: '';
+        display: block;
+        position: absolute;
+        right:-10px;
+        top:50%;
+        transform: translate(0,-50%);
+        border-top:10px solid transparent;
+        border-bottom:10px solid transparent;
+        border-left:10px solid #999;
+    }
+    .triangle:after{
+        content: '';
+        display: block;
+        position: absolute;
+        right:-9px;
+        top:50%;
+        transform: translate(0,-50%);
+        border-top:10px solid transparent;
+        border-bottom:10px solid transparent;
+        border-left:10px solid #ffffff;
+    }
+</style>
+</body>
+</html>
