@@ -6,100 +6,34 @@
 </head>
 <body>
 <script>
-    function getId(){
-        return new MyPromise(function (resolve,reject) {
-            setTimeout(function () {
-                if(true){
-                    resolve(100);
-                }
-                else {
-                    reject('err');
-                }
-            },1000);
-        });
+    function MyPromise(func) {
+        this.callbacks = '';
+//        func.call(this,this.resolve);
+        func(this.resolve);
+    }
+    MyPromise.prototype.then = function (callback) {
+        this.callbacks = callback;
+    }
+    MyPromise.prototype.resolve = function (value) {
+        this.callbacks(value);
     }
 
-    function getNameById(){
-        return new MyPromise(function (resolve,reject) {
+
+    function getUserId() {
+        return new MyPromise(function (resolve) {
+            console.log(this);
             setTimeout(function () {
                 if(true){
-                    resolve('chenjun');
+                    resolve(1);
                 }
-                else {
-                    reject('err');
-                }
-            },1000);
+            },200);
         });
     }
-
-    getId().then(getNameById).then(function (name) {
-        console.log(name);
-    }).catch(function (err) {
-        console.log(err);
+    getUserId().then(function (id) {
+        console.log(id);
     });
 
 
-    function MyPromise(func){
-        var resolveCallBacks = [],
-                value = '',
-                rejectCallback,
-                state = 'pending';//fulFilled,rejected
-
-        rejectCallback = function(err){
-            console.log(err);
-        };
-
-        function resolve(newValue){
-            if(newValue && (typeof newValue === 'object' || typeof newValue === 'function')){
-                var then = newValue.then;
-                if(typeof then === 'function'){
-                    then.call(newValue,resolve);
-                    return ;
-                }
-            }
-            value = newValue;
-            state = 'fulFilled';
-            setTimeout(function () {
-                resolveCallBacks.forEach(function (callback) {
-                    handle(callback);
-                })
-            },0);
-        }
-
-        this.then = function (onFulFilled) {
-            return new MyPromise(function (resolve, reject) {
-                handle({
-                    onFulFilled:onFulFilled || '',
-                    resolve:resolve
-                })
-
-            });
-        }
-
-        function handle(callback){
-            if(state == 'pending'){//如果状态是pending
-                resolveCallBacks.push(callback.onFulFilled);
-                return;
-            }
-            if(!callback.onFulFilled){//如果then没有传递任何东西
-                resolve(value);
-                return ;
-            }
-            callback.resolve(callback.onFulFilled(value));
-        }
-
-        function reject(err) {
-            rejectCallback(err);
-        }
-
-        this.catch = function (onRejected) {
-            state = 'rejected';
-            rejectCallback = onRejected;
-            return this;
-        }
-
-        func(resolve,reject);
-    }
 </script>
 </body>
 </html>
