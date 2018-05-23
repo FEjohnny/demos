@@ -6,6 +6,16 @@
 </head>
 <body>
 <script>
+    var p = Promise.all()
+
+    Promise.reject("Testing static reject").then(function(reason) {
+        // 未被调用
+    }, function(reason) {
+        console.log(reason); // "测试静态拒绝"
+    });
+    new Promise(function (resolve, reject) {
+
+    })
     function getId(){
         return new MyPromise(function (resolve,reject) {
             setTimeout(function () {
@@ -18,7 +28,11 @@
             },1000);
         });
     }
+    var promise1 = new Promise(function(resolve, reject) {
+        setTimeout(resolve, 100, 'foo');
+    });
 
+    console.log(promise1);
     function getNameById(){
         return new MyPromise(function (resolve,reject) {
             setTimeout(function () {
@@ -31,6 +45,18 @@
             },1000);
         });
     }
+
+    getId().then(function (id) {
+        console.log(id);
+    }, function (reason) {
+        console.log(reason);
+    })
+
+    getId().then(function (id) {
+        console.log(id);
+    }).catch(function (reason) {
+        console.log(reason);
+    });
 
     getId().then(getNameById).then(function (name) {
         console.log(name);
@@ -71,8 +97,7 @@
                 handle({
                     onFulFilled:onFulFilled || '',
                     resolve:resolve
-                })
-
+                });
             });
         }
 
@@ -97,7 +122,6 @@
             rejectCallback = onRejected;
             return this;
         }
-
         func(resolve,reject);
     }
 </script>
