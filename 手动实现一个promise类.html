@@ -6,124 +6,34 @@
 </head>
 <body>
 <script>
-    var p = Promise.all()
+    function MyPromise(func) {
+        this.callbacks = '';
+//        func.call(this,this.resolve);
+        func(this.resolve);
+    }
+    MyPromise.prototype.then = function (callback) {
+        this.callbacks = callback;
+    }
+    MyPromise.prototype.resolve = function (value) {
+        this.callbacks(value);
+    }
 
-    Promise.reject("Testing static reject").then(function(reason) {
-        // 未被调用
-    }, function(reason) {
-        console.log(reason); // "测试静态拒绝"
-    });
-    new Promise(function (resolve, reject) {
 
-    })
-    function getId(){
-        return new MyPromise(function (resolve,reject) {
+    function getUserId() {
+        return new MyPromise(function (resolve) {
+            console.log(this);
             setTimeout(function () {
                 if(true){
-                    resolve(100);
+                    resolve(1);
                 }
-                else {
-                    reject('err');
-                }
-            },1000);
+            },200);
         });
     }
-    var promise1 = new Promise(function(resolve, reject) {
-        setTimeout(resolve, 100, 'foo');
-    });
-
-    console.log(promise1);
-    function getNameById(){
-        return new MyPromise(function (resolve,reject) {
-            setTimeout(function () {
-                if(true){
-                    resolve('chenjun');
-                }
-                else {
-                    reject('err');
-                }
-            },1000);
-        });
-    }
-
-    getId().then(function (id) {
+    getUserId().then(function (id) {
         console.log(id);
-    }, function (reason) {
-        console.log(reason);
-    })
-
-    getId().then(function (id) {
-        console.log(id);
-    }).catch(function (reason) {
-        console.log(reason);
-    });
-
-    getId().then(getNameById).then(function (name) {
-        console.log(name);
-    }).catch(function (err) {
-        console.log(err);
     });
 
 
-    function MyPromise(func){
-        var resolveCallBacks = [],
-                value = '',
-                rejectCallback,
-                state = 'pending';//fulFilled,rejected
-
-        rejectCallback = function(err){
-            console.log(err);
-        };
-
-        function resolve(newValue){
-            if(newValue && (typeof newValue === 'object' || typeof newValue === 'function')){
-                var then = newValue.then;
-                if(typeof then === 'function'){
-                    then.call(newValue,resolve);
-                    return ;
-                }
-            }
-            value = newValue;
-            state = 'fulFilled';
-            setTimeout(function () {
-                resolveCallBacks.forEach(function (callback) {
-                    handle(callback);
-                })
-            },0);
-        }
-
-        this.then = function (onFulFilled) {
-            return new MyPromise(function (resolve, reject) {
-                handle({
-                    onFulFilled:onFulFilled || '',
-                    resolve:resolve
-                });
-            });
-        }
-
-        function handle(callback){
-            if(state == 'pending'){//如果状态是pending
-                resolveCallBacks.push(callback.onFulFilled);
-                return;
-            }
-            if(!callback.onFulFilled){//如果then没有传递任何东西
-                resolve(value);
-                return ;
-            }
-            callback.resolve(callback.onFulFilled(value));
-        }
-
-        function reject(err) {
-            rejectCallback(err);
-        }
-
-        this.catch = function (onRejected) {
-            state = 'rejected';
-            rejectCallback = onRejected;
-            return this;
-        }
-        func(resolve,reject);
-    }
 </script>
 </body>
 </html>
