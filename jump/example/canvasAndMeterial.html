@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas元素大小与绘图表面大小</title>
+    <style>
+        .canvas{
+            width: 600px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas width="600" height="300" id="c1"></canvas>
+
+<canvas class="canvas" id="c2"></canvas>
+
+<script>
+    var c1 = document.getElementById('c1');
+    var c2 = document.getElementById('c2');
+    var context1 = c1.getContext('2d');
+    var context2 = c2.getContext('2d');
+    context1.font='38px Arial';
+    context2.font='38px Arial';
+    context1.strokeStyle='blue';
+    context2.strokeStyle='blue';
+    context1.fillText('hello Canvas',c1.width/2-150,c1.height/2+15);
+    context2.fillText('hello Canvas',c2.width/2-150,c2.height/2+15);
+    context1.strokeText('hello Canvas',c1.width/2-150,c1.height/2+15);
+    context2.strokeText('hello Canvas',c2.width/2-150,c2.height/2+15);
+</script>
+</body>
+</html>

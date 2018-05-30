@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>lazyMan</title>
+</head>
+<body>
+<p>lazyman('chenjun'):输出chenjun</p>
+<p>lazyman('chenjun').eat('dinner'):输出chenjun,输出eatdinner</p>
+<p>lazyman('chenjun').sleep(3).eat('lauch'):输出chenjun,输出eatdinner,,lauch</p>
+<p>lazyman('chenjun').eat('dinner').eatFirst('lauch'):输出chenjun,输出lauch,,dinner</p>
+<script type="text/javascript">
+	function _LazyMan(name){
+		var _this = this;
+		this.tasks = [];
+		var f = function(name){
+			return function(){
+				console.log(name);
+				_this.next();
+			}
+		};
+		this.tasks.push(f(name));
+		setTimeout(function(){_this.next();},0);
+
+	}
+	_LazyMan.prototype.next = function(){
+		var func = this.tasks.shift();
+		if(func){
+			func();
+		}
+	}
+
+	_LazyMan.prototype.sleep = function(time){
+		var _this = this;
+		var f = function(time){
+			return function(){
+				setTimeout(function(){
+					console.log('wake up after' + time +'s');
+					_this.next();
+				},time*1000);
+			}
+		}
+		this.tasks.push(f(time));
+		return this;
+	}
+
+	_LazyMan.prototype.eat = function(something){
+		var _this = this;
+		var f = function(something){
+			return function(){
+				console.log('eat '+something);
+				_this.next();
+			}
+		};
+		this.tasks.push(f(something));
+		return this;
+	}
+
+	_LazyMan.prototype.eatFirst = function(something){
+		var _this = this;
+		var f = function(something){
+			return function(){
+				console.log('eatFirst '+something);
+				_this.next();
+			}
+		};
+		this.tasks.unshift(f(something));
+		return this;
+	}
+
+	function lazyMan(name){
+		return new _LazyMan(name);
+	}
+
+	lazyMan('chenjun').sleep(5).eat('dinner');
+</script>
+
+</body>
+</html>

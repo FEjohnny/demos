@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimum-scale=1">
+    <link rel="stylesheet" href="./assets/index.css">
+    <title>Title</title>
+</head>
+<body>
+    <!--容器-->
+    <div id="container" class="container">
+        <p class="score">得分：<span id="score">0</span></p>
+
+    </div>
+
+    <div class="loading" id="loading">
+        <span id="loadingText">加载中。。。</span>
+        <span class="start" id="start">开始游戏</span>
+    </div>
+
+    <div class="loading"  id="restartwrap" style="display: none">
+        <span class="restart" id="restart">再玩一局</span>
+    </div>
+
+
+    <script src="./three/build/three.js"></script>
+    <script src="./three/tween.js"></script>
+    <script src="three/inflate.min.js"></script>
+    <script src="three/loaders/FBXLoader.js"></script>
+    <script src="./three/detector.js"></script>
+
+    <script src="./assets/requestAnimationFrame.js"></script>
+    <script src="./assets/index.js"></script>
+
+</body>
+</html>

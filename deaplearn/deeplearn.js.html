@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>神经网络</title>
+</head>
+<body>
+
+<script src="deeplearn.js"></script>
+<script>
+    function generateRandomRgbColors(m){
+        var rawInputs = [];
+        for (var i = 0; i < m; i++){
+            rawInputs.push(generateRandomRgbColor());
+        }
+        return rawInputs;
+    }
+    function generateRandomRgbColor(){
+        return [
+            randomIntFromInterval(0,255),
+            randomIntFromInterval(0,255),
+            randomIntFromInterval(0,255)
+        ];
+    }
+    function randomIntFromInterval(min,max){
+        return Math.floor(Math.random() * (max - min - 1)+min);
+    }
+
+    function getAccessibleColor(rgb){
+        var [r,g,b] = rgb;
+        var colors = [r/255,g/255,b/255];
+        var c = colors.map(function (col) {
+            if(col <= 0.03928){
+                return col/12.92;
+            }
+            return Math.pow((col+0.055)/1.055,2.4);
+        });
+        var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+
+        return (L > 0.179)
+                ? [ 0,1 ]
+                : [ 1,0 ];
+    }
+
+    function generateColorSet(m) {
+        const rawInputs = generateRandomRgbColors(m);
+        const rawTargets = rawInputs.map(getAccessibleColor);
+
+        return { rawInputs,rawTargets };
+    }
+
+    function normalizeColor(rgb) {
+        return rgb.map(v => v / 255);
+    }
+</script>
+</body>
+</html>

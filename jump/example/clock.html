@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>时钟</title>
+</head>
+<body>
+
+<canvas width="300" height="300" id="canvas"></canvas>
+
+<script>
+
+    var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            MARGIN = 45,
+            FONT_HEIGHT = 15,
+            RADIUS = (canvas.width - MARGIN) / 2;
+
+    function drawCircle() {
+        context.beginPath();
+        context.arc(canvas.width / 2, canvas.height / 2, RADIUS, 0, Math.PI * 2, true);
+        context.stroke();
+    }
+    function drawNumbers() {
+        var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                angle = 0;//角度
+        numbers.forEach(function (num) {
+            angle = Math.PI / 6 * num;
+            var _x = canvas.width / 2 + Math.sin(angle) * (RADIUS + 10) - context.measureText(num).width / 2,
+                    _y = canvas.height / 2 - Math.cos(angle) * (RADIUS + 10) + FONT_HEIGHT / 3;
+            context.font = '15px';
+            context.fillText(num, _x, _y);
+        });
+    }
+    function drawCenter() {
+        context.beginPath();
+        context.arc(canvas.width / 2, canvas.height / 2, 5, 0, Math.PI * 2, true);
+        context.fill();
+    }
+
+    function drawLine(angle, type) {
+        switch (type) {
+            case 'h'://时
+                context.moveTo(canvas.width / 2, canvas.height / 2);
+                context.lineTo(canvas.width / 2 + Math.sin(angle) * (canvas.width / 2 - 60), canvas.height / 2 - Math.cos(angle) * (canvas.height / 2 - 60));
+                context.lineWidth = 4.0;
+                context.stroke();
+                break;
+            case 'm'://分
+                context.moveTo(canvas.width / 2, canvas.height / 2);
+                context.lineTo(canvas.width / 2 + Math.sin(angle) * (canvas.width / 2 - 50), canvas.height / 2 - Math.cos(angle) * (canvas.height / 2 - 50));
+                context.lineWidth = 2.0;
+                context.stroke();
+                break;
+            case 's'://秒
+                context.moveTo(canvas.width / 2, canvas.height / 2);
+                context.lineTo(canvas.width / 2 + Math.sin(angle) * (canvas.width / 2 - 30), canvas.height / 2 - Math.cos(angle) * (canvas.height / 2 - 30));
+                context.lineWidth = 1.0;
+                context.stroke();
+                break;
+        }
+    }
+
+    function drawLines() {
+        var _date = new Date(),
+                _hourse = _date.getHours() > 12 ? _date.getHours() - 12 : _date.getHours(),
+                _minute = _date.getMinutes(),
+                _secend = _date.getSeconds(),
+                _h_angle = Math.PI / 6 * _hourse + Math.PI / 6 * _minute / 60 + Math.PI / 6 * _secend / 3600,
+                _m_angle = Math.PI / 30 * _minute + Math.PI / 30 * _secend / 60,
+                _s_angle = Math.PI / 30 * _secend;
+        drawLine(_h_angle, 'h');
+        drawLine(_m_angle, 'm');
+        drawLine(_s_angle, 's');
+    }
+
+    function init() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        drawCircle();
+        drawNumbers();
+        drawCenter();
+        drawLines();
+    }
+
+    setInterval(function () {
+        init();
+    }, 1000);
+
+</script>
+
+</body>
+
+</html>
