@@ -84,6 +84,7 @@ function offlineRequest(request) {
     }
 }
 
+//为 fetch 事件添加事件监听器
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
