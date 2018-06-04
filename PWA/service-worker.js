@@ -2,7 +2,7 @@
  * Created by 陈俊 on 2018/5/31.
  */
 
-var cacheName = 'helloWorld-4'; //缓存的名称
+var cacheName = 'helloWorld'; //缓存的名称
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(cacheName)
@@ -44,4 +44,15 @@ self.addEventListener('fetch', function (event) {
             );
         })
     );
+});
+
+window.addEventListener('beforeinstallprompt', function (event) {
+    event.userChoice.then(function (result) {
+        console.log(result.outcome);
+        if (result.outcome == 'dismissed') {//确认提示
+
+        } else {//关掉提示
+
+        }
+    });
 });
