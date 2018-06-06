@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Progressive Times</title>
+</head>
+<body>
+<button id="btnSave" disabled>Click this to show the prompt</button>
+</body>
+<script>
+    window.addEventListener('load', function () {
+        var btnSave = document.getElementById('btnSave');
+        var savedPrompt;
+        if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js').then(function (registration) {
+            // 注册成功
+            console.log('ServiceWorker registration successful with scope: ',
+                    registration.scope);
+        }).catch(function (err) {
+            // 注册失败 :(
+            console.log('ServiceWorker registration failed: ', err);
+        });
+        }
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            btnSave.removeAttribute('disabled');
+            savedPrompt = e;
+            return false;
+        });
+        btnSave.addEventListener('click', function () {
+        if (savedPrompt !== undefined) {
+            savedPrompt.prompt();
+            savedPrompt.userChoice.then(function (result) {
+            if (result.outcome == 'dismissed') {
+                console.log('User dismissed homescreen install');
+            } else {
+                console.log('User added to homescreen');
+            }
+              savedPrompt = null;
+          });
+        }
+        });
+    });
+</script>
+</html>
