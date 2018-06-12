@@ -2,6 +2,12 @@
     <div class="page-index">
         <h2>LAVAS</h2>
         <h4>[ˈlɑ:vəz]</h4>
+        <ul>
+            <li>
+                <router-link to="/">首页</router-link>
+                <router-link to="/details">详情</router-link>
+            </li>
+        </ul>
     </div>
 </template>
 

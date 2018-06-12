@@ -1,0 +1,20 @@
+{
+  "name": "a web app can add to screen",
+  "short_name": "webApp",
+  "start_url": "/index.html",
+  "display": "Browser",
+  "theme_color": "#FFDF00",
+  "background_color": "#FFDF00",
+  "orientation": "landscape-primary",
+  "icons": [{
+    "src": "homescreen.png",
+    "sizes": "192x192",
+    "type": "image/png"
+    },
+    {
+      "src": "homescreen-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ]
+}

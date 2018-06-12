@@ -27,6 +27,8 @@ module.exports = {
     router: {
         mode: 'history',
         base: '/',
+        linkExactActiveClass: 'active',
+        linkActiveClass: 'active',
         pageTransition: {
             type: 'fade',
             transitionClass: 'fade'
