@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Progressive Times</title>
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+<h1 id="kind"></h1>
+<h1>index</h1>
+<button id="subscribe">订阅/取消订阅</button>
+<script>
+    // 将base64的applicationServerKey转换成UInt8Array
+    function urlBase64ToUint8Array(base64String) {
+        var padding = '='.repeat((4 - base64String.length % 4) % 4);
+        var base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+        var rawData = window.btoa(base64); // window.atob对用base-64编码过的字符串进行解码   window.btoa编码
+        var outputArray = new Uint8Array(rawData.length); // 8位无符号整形数组
+        for (var i = 0, max = rawData.length; i < max; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    function subscribe(serviceWorkerReg) {
+        console.log(1);
+        serviceWorkerReg.pushManager.subscribe({ // 2. 订阅
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array('<applicationServerKey>')
+        }).then(function (subscription) {
+            alert(1);
+            console.log(subscription);
+            // 3. 发送推送订阅对象到服务器，具体实现中发送请求到后端api
+            sendEndpointInSubscription(subscription);
+        }).catch(function () {
+            if (Notification.permission === 'denied') {
+                // 用户拒绝了订阅请求
+            }
+        });
+    }
+
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+        navigator.serviceWorker.register('public/sw.js').then(function (registration) {
+            // subscribe(registration);
+            initialiseState();
+            // var serviceWorker;
+            // if (registration.installing) {
+            //     serviceWorker = registration.installing;
+            //     document.querySelector('#kind').textContent = 'installing';
+            // } else if (registration.waiting) {
+            //     serviceWorker = registration.waiting;
+            //     document.querySelector('#kind').textContent = 'waiting';
+            // } else if (registration.active) {
+            //     serviceWorker = registration.active;
+            //     document.querySelector('#kind').textContent = 'active';
+            // }
+            // if (serviceWorker) {
+            //     console.log(serviceWorker.state);
+            //     serviceWorker.addEventListener('statechange', function (e) {
+            //         console.log(e.target.state);
+            // registration.showNotification('hahah');
+            //     });
+            // }
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }).catch(function(err){
+            console.log('ServiceWorker registration failed: ', err);
+        });
+        navigator.serviceWorker.ready.then(function (reg) {
+            console.log(reg);
+            subscribe(reg)
+        });
+    }
+
+    function initialiseState() {
+        if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
+            return;
+        }
+
+        // 检查是否可以进行服务器推
+        if (!('PushManager' in window)) {
+            return;
+        }
+
+        // 是否被禁用
+        if (Notification.permission === 'denied') {
+            return;
+        }
+
+        if (Notification.permission === 'granted') {
+            // dosth();
+            return;
+        }
+        // 如果还处于默认情况下，则进行询问
+        navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
+            // 检查订阅
+            alert(1);
+            serviceWorkerRegistration.pushManager.getSubscription()
+                .then(function(subscription) {
+                    // 检查是否已经被订阅
+                    if (!subscription) {
+                        // 没有
+                        return;
+                    }
+                    // 有
+                    // doSth();
+                })
+                .catch(function(err) {
+                    window.Demo.debug.log('Error during getSubscription()', err);
+                });
+        });
+    }
+
+    var pushButton = document.querySelector('#subscribe');
+    var isPushEnabled = false;
+    pushButton.addEventListener('click', function() {
+        if (isPushEnabled) {
+            unsubscribe();
+        } else {
+            subscribe();
+        }
+    });
+
+    function subscribe() {
+        var pushButton = document.querySelector('#subscribe');
+        pushButton.disabled = true;
+        alert(1);
+        console.log(Promise.resolve(navigator.serviceWorker.ready));
+        Promise.resolve(navigator.serviceWorker.ready).then(function(serviceWorkerRegistration) {
+            // 请求订阅
+            alert(3);
+            serviceWorkerRegistration.pushManager.subscribe({userVisibleOnly: true})
+                .then(function(subscription) {
+                    isPushEnabled = true;
+                    pushButton.textContent = 'Disable Push Messages';
+                    pushButton.disabled = false;
+                    return sendSubscriptionToServer(subscription);
+                })
+        }).catch(function (reason) {
+            alert(2);
+        });
+    }
+
+    function askPermission() {
+        return new Promise(function (resolve, reject) {
+            var permissionResult = Notification.requestPermission(function (permission) {
+                // 旧版本
+                resolve(permission);
+            });
+            if (permissionResult) {
+                permissionResult.then(resolve, reject);
+            }
+        }).then(function (permissionResult) {
+            // permissionResult的值为granted或者denied
+            if(permissionResult !== 'granted'){
+                //用户未授权
+                console.log('未获得通知权限');
+            }
+        });
+    }
+</script>
+</body>
+</html>

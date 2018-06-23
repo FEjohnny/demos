@@ -30,26 +30,29 @@
         return outputArray;
     }
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').then(function (registration) {
-            //获取任何已存在的订阅
+        navigator.serviceWorker.register('public/sw.js').then(function (registration) {
+            // 获取任何已存在的订阅
             return registration.pushManager.getSubscription().then(function (subscription) {
                 //如果已经订阅过了，则无需再次注册
+                console.log(registration);
                 if (subscription) {
-                return;
+                    console.log('已经订阅过了');
+                    return;
                 }
                 //还没有订阅过，则显示一个提示
-                return registration.pushManager.subscribe({
+                registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
-                }).then(function (subscription) {
-                    console.log(subscription);
+                }).then(function (sub) {
+                    console.log('获取权限成功');
+
                     //需要从订阅对象中获取 key 和 authSecret
-                    var rawKey = subscription.getKey ? subscription.getKey('p256dh') : '';
+                    var rawKey = sub.getKey ? sub.getKey('p256dh') : '';
                     key = rawKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawKey))) : '';
-                    var rawAuthSecret = subscription.getKey ? subscription.getKey('auth') : '';
+                    var rawAuthSecret = sub.getKey ? sub.getKey('auth') : '';
 
                     authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : '';
-                    endpoint = subscription.endpoint;
+                    endpoint = sub.endpoint;
 
                     //最后，将详细信息发送给服务器以注册用户
                     return fetch('./register', {
@@ -58,17 +61,38 @@
                                 'content-type': 'application/json'
                             }),
                             body: JSON.stringify({
-                            endpoint: subscription.endpoint,
+                            endpoint: sub.endpoint,
                             key: key,//key 和 authSecret 将用于存储用户的详细信息
                             authSecret: authSecret,
                         }),
                     });
+                }).catch(function (reason) {
+                    console.log('获取权限失败：'+reason);
                 });
             });
         }).catch(function (err) {
             // 注册失败 :(
             console.log('ServiceWorker registration failed: ', err);
         });
+    }
+
+    function askPermission() {
+        return new Promise(function (resolve, reject) {
+            var permissionResult = Notification.requestPermission(function (permission) {
+                // 旧版本
+                resolve(permission);
+            });
+            if (permissionResult) {
+                permissionResult.then(resolve, reject);
+            }
+        });
+        //     .then(function (permissionResult) {
+        //     // permissionResult的值为granted或者denied
+        //     if(permissionResult !== 'granted'){
+        //         //用户未授权
+        //         console.log('未获得通知权限');
+        //     }
+        // });
     }
 </script>
 </body>
