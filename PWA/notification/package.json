@@ -11,6 +11,7 @@
   "devDependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
+    "firebase": "^5.1.0",
     "web-push": "^3.3.1"
   }
 }

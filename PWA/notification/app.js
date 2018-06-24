@@ -5,8 +5,9 @@
 //添加必要的依赖
 const webpush = require('web-push');
 const express = require('express');
-var bodyParser = require('body-parser');
-var path = require('path');
+const bodyParser = require('body-parser');
+const firebase = require('firebase'); // 倒入google firebase模块
+const path = require('path');
 const app = express();
 
 // Express setup
@@ -16,55 +17,41 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
 
+// Initialize Firebase
+// https://console.firebase.google.com/project/notificationtest-42518/overview?hl=zh-cn
+const config = {
+    apiKey: "AIzaSyBygaa3EvEQboDzNdNez9EodI9xPjXLPFA",
+    authDomain: "notificationtest-42518.firebaseapp.com",
+    databaseURL: "https://notificationtest-42518.firebaseio.com",
+    projectId: "notificationtest-42518",
+    storageBucket: "notificationtest-42518.appspot.com",
+    messagingSenderId: "809106520866"
+};
+firebase.initializeApp(config);
 
-function saveRegistrationDetails(endpoint, key, authSecret) {
-    // Save the users details in a DB
-}
 
-//设置 VAPID 详情
+var vapidKeys = webpush.generateVAPIDKeys(); // 生成公私钥
+
+//设置 VAPID 详情,设置公私钥
 webpush.setVapidDetails(
-    'mailto:contact@deanhume.com',
-    'BAyb_WgaR0L0pODaR7wWkxJi__tWbM1MPBymyRDFEGjtDCWeRYS9EF7yGoCHLdHJi6hikYdg4MuYaK0XoD0qnoY',
-    'p6YVD7t8HkABoez1CvVJ5bl7BnEdKUu5bSyVjyxMBh0'
+    'localhost:3000',
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
 );
+// webpush.setGCMAPIKey('AIzaSyBygaa3EvEQboDzNdNez9EodI9xPjXLPFA');
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-app.post('/sendMessage', function (req, res) {
-    var endpoint = req.body.endpoint;
-    var authSecret = req.body.authSecret;
-    var key = req.body.key;
+app.get('/publicKey', function (req, res) {
+    res.send(vapidKeys.publicKey);
+})
 
-    const pushSubscription = {
-        endpoint: req.body.endpoint,
-        keys: {
-            auth: authSecret,
-            p256dh: key
-        }
-    };
-
-    var body = 'Breaking News: Nose picking ban for Manila police';
-    var iconUrl = 'homescreen.png';
-
-    webpush.sendNotification(pushSubscription,
-        JSON.stringify({
-            msg: body,
-            url: 'http://localhost:3000/',
-            icon: iconUrl,
-            type: 'actionMessage'
-        })).then(result => {
-            console.log(result);
-            res.sendStatus(201);
-        }).catch(err => {
-            console.log(err);
-        });
-});
-
-//监听指向 '/register' 的 POST 请求
 app.post('/register', function (req, res) {
     var endpoint = req.body.endpoint;
+    var key = req.body.key;
+    var authSecret = req.body.authSecret;
 
     //保存用户注册详情，这样我们可以在稍后阶段向他们发送消息
     saveRegistrationDetails(endpoint, key, authSecret);
@@ -92,8 +79,39 @@ app.post('/register', function (req, res) {
     }).catch(function (err) {
         console.log(err);
     });
-    res.send('re')
+    res.send('success');
 });
+
+app.post('/sendMessage', function (req, res) {
+    var endpoint = req.body.endpoint;
+    var authSecret = req.body.authSecret;
+    var key = req.body.key;
+
+    const pushSubscription = {
+        endpoint: req.body.endpoint,
+        keys: {
+            auth: authSecret,
+            p256dh: key
+        }
+    };
+
+    var body = 'Breaking News: Nose picking ban for Manila police';
+    var iconUrl = 'homescreen.png';
+
+    webpush.sendNotification(pushSubscription,
+        JSON.stringify({
+            msg: body,
+            url: 'http://localhost:3000/',
+            icon: iconUrl,
+            type: 'actionMessage'
+        })).then(result => {
+        console.log('推送消息成功：' + result);
+        res.sendStatus(201);
+    }).catch(err => {
+        console.log('推送消息失败：' + err);
+    });
+});
+
 
 app.listen(3000, function () {
     console.log('Web push app listening on port 3000!')
