@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>观察者模式</title>
+</head>
+<body>
+<!--添加观察者-->
+<button id="addNewObserver">add new observer checkbox</button>
+<!--产生通知-->
+<input type="checkbox" id="mainCheckbox">
+<!--放置所以observer-->
+<div id="observerContainer"></div>
+
+<script type="text/javascript">
+    // 实现subject类
+    function Subject() {
+        this.observerLists = [];
+    }
+    Subject.prototype.Add = function (observer) {
+        this.observerLists.push(observer);
+    }
+    Subject.prototype.Remove = function (index) {
+        if(index > -1 && index < this.observerLists.length){
+            this.observerLists.splice(index,1);
+        }
+    }
+    Subject.prototype.Notify = function (context) {
+        for(var i = 0; i < this.observerLists.length; i++){
+            this.observerLists[i].update(context);
+        }
+    }
+    //实现Observer类
+    function Observer() {
+        this.update = function (context) {
+            // ...处理更新事件，一般在具体观察者中实现该方法
+        }
+    }
+    // // 具体目标类
+    //  var concreteSubject = new Subject();
+    // // 具体观察者
+    // var ob1 = new Observer();
+    // var ob2 = new Observer();
+    // var ob3 = new Observer();
+    // // 目标类维护一系列观察者
+    // concreteSubject.Add(ob1);
+    // concreteSubject.Add(ob2);
+    // concreteSubject.Add(ob3);
+    // // 通知更新
+    // concreteSubject.Notify('我更新了');
+
+    // observer具体使用样例start
+    //定义扩展对象方法
+    function extend(obj,extention) {
+        for (var key in obj){
+            extention[key] = obj[key];
+        }
+    }
+    // 引用dom元素
+    var controlCheckbox = document.getElementById(('mainCheckbox')),
+        addBtn = document.getElementById('addNewObserver'),
+        container = document.getElementById('observerContainer');
+    // 具体目标，利用Subject扩展controlCheckbox
+    extend(new Subject(),controlCheckbox);
+    // 点击checkbox会触发通知到观察者上
+    controlCheckbox['onclick'] = new Function('controlCheckbox.Notify(controlCheckbox.checked)');
+    // 添加新的观察者
+    addBtn['onclick'] = addNewObserver;
+    // 具体观察者
+    function addNewObserver() {
+        //创建需要新添加到checkbox
+        var check = document.createElement('input');
+        check.type = 'checkbox';
+        //利用Observer类扩展check
+        extend(new Observer(), check);
+        //重新自定义更新行为
+        check.update = function (value) {
+            this.checked = value;
+        }
+        // 为主subject到观察者列表添加新的观察者
+        controlCheckbox.Add(check);
+        // 将观察者附加到容器中
+        container.appendChild(check);
+    }
+    // observer具体使用样例end
+</script>
+
+</body>
+</html>

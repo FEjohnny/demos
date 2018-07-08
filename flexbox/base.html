@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="base.css">
+</head>
+<body>
+<div id="ad1"></div>
+<div class="flexbox">
+
+</div>
+<script>
+    (function (win, doc) {
+        var s = doc.createElement('script'),
+            h = doc.getElementsByTagName('head')[0],
+            config = {
+                deployId: ['j2khuaimfpjocep7keuqknbrlg '], // 广告位ID
+                ad_local: ['ad1'], // 放置广告的的位置的ID
+                size: [720, 220] // 广告的大小 w h
+            };
+
+        win.idouzi_sdk_config ? win.idouzi_sdk_config.push(config) : win.idouzi_sdk_config = [config];
+
+        if (!win.isLoadSdk) {
+            s.charset = 'utf-8';
+            s.async = true;
+            s.src = "http://ad.idouzi.com/js/js-sdk.js";
+            h.insertBefore(s, h.firstChild);
+            win.isLoadSdk = true;
+        }
+    })(window, document);
+</script>
+
+</body>
+</html>
