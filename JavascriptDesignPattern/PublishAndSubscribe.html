@@ -6,11 +6,66 @@
 </head>
 <body>
 <script type="text/javascript">
-    // 发布者对象
-    function Publisher() {
+    var pubsub = {};
+    (function (q) {
+        var topics = {},
+            subUid = -1;
+        // 通过特定的名称和回调函数订阅事件
+        q.subscribe = function (topic, func) {
+            if (!topics[topic]) {
+                topics[topic] = [];
+            }
+            var token = (++subUid).toString();
+            topics[topic].push({
+                token: token,
+                func: func
+            });
+            return token;
+        }
+        // 基于订阅的标记，取消订阅
+        q.unsubscribe = function (token) {
+            for (var key in topics) {
+                if (topics[key]) {
+                    topics[key].forEach(function (item, index) {
+                        if (item.token === token) {
+                            topics[key].splice(index, 1);
+                            return token;
+                        }
+                    })
+                }
+            }
+            return this;
+        }
+        // 发布或者广播事件
+        q.publish = function (topic, args) {
+            if (!topics[topic]) {
+                return false;
+            }
+            var subscribers = topics[topic],
+                len = subscribers ? subscribers.length : 0;
+            while (len--) {
+                subscribers[len].func(topic, args);
+            }
+            return this;
+        }
+    })(pubsub)
 
+    // 记录通过订阅着收到的主题和数据
+    var msgLogger = function (topics, data) {
+        alert(topics+":" + data);
     }
-
+    // 订阅对象
+    var subscription = pubsub.subscribe("inbox/newMsg",msgLogger);
+    // 发布通知
+    pubsub.publish("inbox/newMsg","hello world!");
+    pubsub.publish("inbox/newMsg",['test','message','!']);
+    pubsub.publish("inbox/newMsg",{
+        sender: 'hell@google.com',
+        body: 'hey again'
+    });
+    // 取消订阅
+    pubsub.unsubscribe(subscription);
+    pubsub.publish("inbox/newMsg","you should not see me!");
 </script>
 
 </body>

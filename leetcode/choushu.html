@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算第N个丑数</title>
+</head>
+<body>
+
+<script>
+    function fnthUglyNumber(n) {
+        var num = 1, result;
+        while (n > 0) {
+            var temp = num;
+            while (temp % 2 === 0) {
+                temp = temp / 2;
+            }
+            while (temp % 5 === 0) {
+                temp = temp / 5;
+            }
+            while (temp % 3 === 0) {
+                temp = temp / 3;
+            }
+            if (temp === 1) {
+                result = num;
+                n --;
+            }
+            num ++;
+        }
+        return result;
+    }
+</script>
+</body>
+</html>
