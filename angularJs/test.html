@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--自动初始化-->
+<!--<html lang="en" xmlns:ng="http://angularjs.org" ng-app id="ng-app">-->
+<!--手动初始化-->
+<html lang="en" xmlns:ng="http://angularjs.org" ng-app="invoice2">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./angular.1.6.5.js"></script>
+    <!--<script src="./invoice1.js"></script>-->
+    <script src="./service.js"></script>
+    <script src="./invoice2.js"></script>
+</head>
+<body>
+<div ng-controller="InvoceController as invoice">
+    <b>订单：</b>
+    <div>
+        数量：<input type="number" ng-model="invoice.qty" required>
+    </div>
+    <div>
+        单价：<input type="number" ng-model="invoice.cost" required>
+        <select ng-model="invoice.inCurr">
+            <option ng-repeat="c in invoice.currenceies">{{c}}</option>
+        </select>
+    </div>
+    <div>
+        <b>总价：
+        <span ng-repeat="c in invoice.currenceies"><br/>{{c}}:{{invoice.total(c)}}</span>
+        </b><br/>
+        <button content="btn" ng-click="invoice.pay()">支付</button>
+    </div>
+</div>
+
+<!--手动初始化-->
+<script>
+    // angular.element(document).ready(function () {
+    //     angular.module('invoice1',[]);
+    //     angular.bootstrap(document,['invoice1']);
+    // })
+</script>
+</body>
+</html>
