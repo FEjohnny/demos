@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算第N个丑数</title>
+</head>
+<body>
+
+<script>
+    // function fnthUglyNumber(n) {
+    //     var num = 1, result;
+    //     while (n > 0) {
+    //         var temp = num;
+    //         while (temp % 2 === 0) {
+    //             temp = temp / 2;
+    //         }
+    //         while (temp % 5 === 0) {
+    //             temp = temp / 5;
+    //         }
+    //         while (temp % 3 === 0) {
+    //             temp = temp / 3;
+    //         }
+    //         if (temp === 1) {
+    //             result = num;
+    //             n --;
+    //         }
+    //         num ++;
+    //     }
+    //     return result;
+    // }
+    function fnthUglyNumber(n) {
+        var all = [1],
+            base = [2,3,5],
+            min,
+            baseLen = base.length;
+        while (n > 1) {
+            var allLen = all.length;
+            min = all[allLen-1] * base[baseLen-1];
+            // 每次循环，计算出下一个丑数，push到列表中
+            for(var i = 0; i < allLen; i++) {
+                for(var j = 0; j < baseLen; j++){
+                    var res = all[i] * base[j];
+                    if (res > all[allLen -1] && res < min) {
+                        min = res;
+                    }
+                }
+            }
+            all.push(min);
+            n--;
+        }
+        return all[all.length-1];
+    }
+</script>
+</body>
+</html>
