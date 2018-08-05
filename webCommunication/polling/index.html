@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>短轮询</title>
+</head>
+<body>
+<h1 id="number"></h1>
+
+<script>
+    // 轮询方法
+    let timer = setTimeout(() => {
+        getMessage();
+    },1000);
+    // 获取消息方法
+    function getMessage() {
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === 4 && xhr.status === 200 || xhr.status === 304 ){
+                document.getElementById('number').innerText = xhr.responseText;
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    getMessage();
+                },1000);
+            }
+        }
+        xhr.open('get','/message');
+        xhr.send('');
+    }
+</script>
+</body>
+</html>
