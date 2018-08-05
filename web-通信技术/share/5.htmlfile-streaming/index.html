@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web 通信技术</title>
+</head>
+<body>
+
+</body>
+<script>
+    function connect_htmlfile(url, callback) {
+        var transferDoc = new ActiveXObject("htmlfile"); // IE下
+        transferDoc.open();
+        transferDoc.write(
+                        "<!DOCTYPE html><html><body><script  type=\"text/javascript\">" +
+                        "document.domain='" + document.domain + "';" +
+                        "<\/script><\/body><\/html>");
+        transferDoc.close();
+        var ifrDiv = transferDoc.createElement("div");
+        transferDoc.body.appendChild(ifrDiv);
+        ifrDiv.innerHTML = "<iframe src='" + url + "'><\/iframe>";
+        transferDoc.callback = callback;
+    }
+    
+    connect_htmlfile('http://localhost:8088/htmlfile', function(data) {
+        document.body.innerHTML = data;
+    });
+</script>
+</html>

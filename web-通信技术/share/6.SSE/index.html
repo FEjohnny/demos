@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web 通信技术</title>
+</head>
+<body>
+
+</body>
+<script>
+    var source=new EventSource('http://localhost:8080/getNumber');
+    source.addEventListener('message', function(e) {
+        document.body.innerHTML = e.data;
+    }, false);
+    source.onopen = function() {
+        console.log('connected');
+    }
+    source.onerror = function(err) {
+        console.log(err);
+    }
+</script>
+</html>

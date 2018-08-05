@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web 通信技术</title>
+</head>
+<body>
+    <div id="data"></div>
+</body>
+<script>
+    function process(data) {
+        document.querySelector('#data').innerHTML = data;
+    }
+    var dataStream = function (url) {
+        var ifr = document.createElement("iframe"),timer;
+        ifr.src = url;
+        ifr.style.display = 'none';
+        document.body.appendChild(ifr);
+    };
+    setTimeout(function(){
+        dataStream('//localhost:8080/getNumber');
+    }, 3000);
+    
+</script>
+</html>

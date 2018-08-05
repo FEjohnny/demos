@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web 通信技术</title>
+</head>
+<body>
+    
+</body>
+<script>
+    var received = 0;
+    function createStream(url, process, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304){
+                    callback(xhr.responseText);
+                } else {
+                    console.err('fail');
+                }
+            }
+            if(xhr.readyState === 3) {
+                result = xhr.responseText.substring(received);
+                received += result.length;
+                process(result);
+            }
+        };
+        xhr.open('get', url, true);
+        xhr.send(null);
+    }
+
+    setTimeout(function(){
+        createStream('//localhost:8080/getNumber', function(data) {
+            document.body.innerText = data;
+        }, function(data) {
+            console.log('end');
+        });
+    }, 3000);
+    
+</script>
+</html>
