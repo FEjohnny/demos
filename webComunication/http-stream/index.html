@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>http-stream</title>
+</head>
+<body>
+<script>
+    function getMsg() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', '/message');
+        xhr.onreadystatechange = function () {
+            if((xhr.status === 200 || xhr.status === 304) && xhr.readyState === 4) {
+                document.body.innerHTML = '<p>'+xhr.responseText+'</p>';
+            }
+            if(xhr.readyState === 3) {
+                document.body.innerHTML = '<p>'+xhr.responseText+'</p>';
+            }
+        }
+        xhr.send('');
+    }
+    setTimeout(getMsg(), 1000);
+</script>
+
+</body>
+</html>
