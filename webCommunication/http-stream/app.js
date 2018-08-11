@@ -11,14 +11,20 @@ app.listen(3000,() => {
     console.log('listen port 3000');
 });
 app.get('/',function (req, res) {
-    res.sendfile('./view/test2.html');
+    res.sendfile('./index.html');
 });
 app.get('/message',function (req, res) {
+    count = 0;
     const timer = setInterval(()=>{
         if(lastCount !== count){  // 数据发生改变的时候，才响应该请求
-            clearInterval(timer);
+            // clearInterval(timer);
             lastCount = count;
-            res.end(count.toString());
+            // res.header('content-type', 'multipart/octet-stream');
+            res.send(count.toString());
+        }
+        if(count > 10) {
+            clearInterval(timer);
+            res.end('end'); // 此次传输结束
         }
     },1000);
 });
