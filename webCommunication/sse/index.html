@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE</title>
+</head>
+<body>
+
+<script>
+    let sse = new EventSource('//localhost:3000/message');
+    sse.onopen = function () {
+        console.log('connect');
+    }
+    sse.onerror = function (err) {
+        console.log(err);
+    }
+    sse.addEventListener('message', function(e) {
+        document.body.innerHTML = e.data;
+    }, false);
+</script>
+</body>
+</html>

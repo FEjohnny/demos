@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>xhr-stream</title>
+</head>
+<body>
+
+<script>
+    function getMsg() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', '/message');
+        xhr.onreadystatechange = function () {
+            if((xhr.status === 200 || xhr.status === 304) && xhr.readyState === 4) {
+                document.body.innerHTML = xhr.responseText;
+            }
+            if(xhr.readyState === 3) {
+                document.body.innerHTML = xhr.responseText;
+            }
+        }
+        xhr.send('');
+    }
+    setTimeout(getMsg(), 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>iframe-streaming</title>
+</head>
+<body>
+<div id="data"></div>
+<script>
+    function process(text) {
+        document.getElementById('data').innerText = text;
+    }
+    function getMsg() {
+        let ifr = document.createElement('iframe');
+        ifr.src = '//localhost:3000/message';
+        ifr.style.display = 'none';
+        document.body.appendChild(ifr);
+    }
+    setTimeout(getMsg(), 1000);
+</script>
+</body>
+</html>
