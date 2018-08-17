@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>chatroom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font: 13px Helvetica, Arial;
+        }
+
+        .container{
+            width: 800px;
+            position: relative;
+            border: 1px solid #e4e4e4;
+            height: 500px;
+            margin: 10% auto;
+        }
+
+        .form {
+            background: #000;
+            padding: 3px;
+            position: absolute;
+            bottom: 0;
+            left: 0px;
+            right: 0;
+            height: 35px;
+            display: flex;
+        }
+
+        .form input {
+            border: 0;
+            width: 90%;
+        }
+
+        .form button {
+            width: 10%;
+            background: rgb(130, 224, 255);
+            border: none;
+        }
+
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            height: 465px;
+            overflow-y: scroll;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+        }
+
+        #messages li:nth-child(odd) {
+            background: #eee;
+        }
+    </style>
+    <script src="angular.1.6.5.js"></script>
+</head>
+<body>
+<div class="container" ng-controller="chat">
+    <ul>
+        <li ng-repeat="msg in msgLists">{{msg}}</li>
+    </ul>
+    <div class="form">
+        <input ng-model="message" autocomplete="off"/>
+        <button ng-click="submit()">Send</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js"></script>
+<script>
+    let socket = io();
+    let app = angular.module('app', []);
+    app.controller('chat',function ($scope) {
+        $scope.msgLists = [];
+        $scope.message = '';
+        $scope.submit = function () {
+            socket.emit('chat message', $scope.message);
+            $scope.message = '';
+        }
+    });
+</script>
+</body>
+</html>
