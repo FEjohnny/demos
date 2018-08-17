@@ -15,7 +15,7 @@ io.on('connection', (socket) => {
     // 监听chat message 事件
     socket.on('chat message', (msg) => {
         console.log(`msg: ${msg}`);
-    })
+    });
     // 监听断开链接
     socket.on('disconnect', () => {
         console.log('a user disconnected');
