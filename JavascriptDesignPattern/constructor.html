@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>构造器模式</title>
+</head>
+<body>
+<script>
+    // 简单模式
+    function Person(name, age) {
+        this.name = name;
+        this.age = age;
+        this.speak = functino() {
+            console.log('my name is: ' + this.name);
+        }
+    }
+    var me = new Person('chenjun', 17);
+    var you = new Person('Guest', 18);
+    me.speak();
+    you.speak();
+
+    // prototype模式
+    function Person(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    Person.speak = functino() {
+        console.log('my name is: ' + this.name);
+    }
+    var me = new Person('chenjun', 17);
+    var you = new Person('Guest', 18);
+    me.speak();
+    you.speak();
+</script>
+</body>
+</html>
