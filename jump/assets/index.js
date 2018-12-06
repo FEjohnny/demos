@@ -74,12 +74,15 @@ function initPlane() {
 
 //加载3D模型文件
 var role;
+var _material;
 function initLoader() {
     var material = new THREE.MeshLambertMaterial({color: 0x000000, side: THREE.DoubleSide});
-    var loader = new THREE.FBXLoader();
+    var loader = new THREE.FBXLoader(); // 3d模型loader
+    // var texture = new THREE.ImageUtils.loadTexture; // 图片loader，用来做纹理
     loader.manager.onProgress = function (e) {
         console.log(e);
     }
+    // 加载3D模型
     // loader.load("../assets/Samba Dancing.fbx", function (object) {
     loader.load("../assets/res/car_body_white.FBX", function (object) {
         object.scale.set(0.005, 0.005, 0.005);
@@ -98,6 +101,11 @@ function initLoader() {
         document.getElementById("loadingText").style.display = 'none';
         document.getElementById("start").style.display = 'inline-block';
     });
+
+    // 加载纹理
+    THREE.ImageUtils.loadTexture("../assets/res/bag.png", null, function(texture) {
+        _material = new THREE.MeshBasicMaterial({color:0x739783,map:texture});
+    });
 }
 
 document.getElementById('start').onclick = function(e){
@@ -115,7 +123,7 @@ document.getElementById('start').onclick = function(e){
 var Box = function (size, position) {
     var geometry = new THREE.BoxGeometry(size.l, size.w, size.h);
     var material = new THREE.MeshLambertMaterial({color: 0x999999});
-    var _box = new THREE.Mesh(geometry, material);
+    var _box = new THREE.Mesh(geometry, _material);
     _box.rotation.z = Math.PI / 4;
     _box.castShadow = true;//开启投影
     _box.receiveShadow = true;//接收投影
