@@ -18,8 +18,8 @@ function initRenderer() {
     renderer.shadowMap.enabled = true;//渲染投影
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.shadowMap.soft = true;
-    renderer.shadowMap.height = 2048;
-    renderer.shadowMap.width = 2048;
+    renderer.shadowMap.height = 1024;
+    renderer.shadowMap.width = 1024;
     _container.appendChild(renderer.domElement);
     renderer.setClearColor(0xf3f3f3, 1.0);
 }
@@ -29,8 +29,7 @@ var camera,
     lookAtPos = [0, 0, 0];//相机位置
 function initCamera() {
     //透视相机
-    camera = new THREE.PerspectiveCamera(45, _clientWidth / _clientHeight, 1, 10000);
-    // camera.rotation.z = Math.PI / 4;
+    camera = new THREE.PerspectiveCamera(45, _clientWidth / _clientHeight, 0.1, 10000);
     camera.position.x = 0;
     camera.position.y = 0;
     camera.position.z = 18;//18
@@ -64,7 +63,7 @@ function initLight() {
 }
 
 //地面
-var plane,planeSize = [100, 100];//地面大小
+var plane,planeSize = [1000, 1000];//地面大小
 function initPlane() {
     var geometry = new THREE.PlaneGeometry(planeSize[0], planeSize[1]);
     var material = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
@@ -81,7 +80,8 @@ function initLoader() {
     loader.manager.onProgress = function (e) {
         console.log(e);
     }
-    loader.load("../assets/Samba Dancing.fbx", function (object) {
+    // loader.load("../assets/Samba Dancing.fbx", function (object) {
+    loader.load("../assets/res/car_body_white.FBX", function (object) {
         object.scale.set(0.005, 0.005, 0.005);
         object.rotation.x = Math.PI / 4;
         object.rotation.y = Math.PI / 4 * 3;
@@ -215,6 +215,7 @@ function check(){
     var points = getPoints(boxList[activeIndex]),
         result = true;
     //判断落点是否在下一个box上
+    return true;
     outer:
     for(var i = 0; i < points.length; i++){
         var p = points[i];
@@ -312,11 +313,12 @@ function nextStep(){
             z: boxList[activeIndex].position.z
         }
     }
-    var _box_size = Math.ceil(Math.random()*2);
-    // var _box_size = 2;
+    // var _box_size = Math.ceil(Math.random()*2);
+    var _box_size = 2;
     _box = new Box({l: _box_size, w: _box_size, h: 1}, _position);
     _box.size = {l: _box_size, w: _box_size, h: 1};
     boxList.push(_box);
+    console.log(boxList);
     animateScene(prevBoxDistance);
     setTimeout(function () {
         animateBox(_box, 2, 0.52);
