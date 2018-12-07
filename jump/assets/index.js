@@ -98,8 +98,8 @@ function initLoader() {
     // loader.load("../assets/Samba Dancing.fbx", function (object) {
     loader.load("../assets/res/car_body_white.FBX", function (object) {
         object.scale.set(0.005, 0.005, 0.005);
-        object.rotation.x = Math.PI / 4;
-        object.rotation.y = Math.PI / 4 * 3;
+        object.rotation.x = Math.PI / 4 * 2;
+        // object.rotation.y = Math.PI / 4 * 3;
         object.position.set(boxList[activeIndex].position.x,boxList[activeIndex].position.y,boxList[activeIndex].position.z);
         object.traverse(function (child) {
             if (child.isMesh) {
