@@ -24,12 +24,12 @@ function initRenderer() {
     renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(_clientWidth, _clientHeight);
     renderer.shadowMap.enabled = true;//渲染投影
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 更加柔和的阴影,默认的是THREE.PCFShadowMap
     renderer.shadowMap.soft = true;
-    renderer.shadowMap.height = 1024;
-    renderer.shadowMap.width = 1024;
+    renderer.shadowMap.height = 1024*4;
+    renderer.shadowMap.width = 1024*4;
     _container.appendChild(renderer.domElement);
-    renderer.setClearColor(0xf3f3f3, 1.0);
+    renderer.setClearColor(0xff0000, 1.0);
 }
 
 //初始化相机
@@ -48,7 +48,7 @@ function initCamera() {
 var scene;
 function initScene() {
     scene = new THREE.Scene();
-    scene.rotation.x = -Math.PI / 4;
+    scene.rotation.x = -Math.PI / 4 ;
     scene.position.set(0,0,0);
     scene.background = 0xFFB6C1;
 }
@@ -58,13 +58,23 @@ var light;
 function initLight() {
     //方向光
     light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(200, -80, 280); // 200, -80, 280
+    light.position.set(200, -80, 230); // 200, -80, 280
     light.castShadow = true;//开启投影
     light.target = plane;
-    light.shadow.mapSize.width = 2048;  // default1024
-    light.shadow.mapSize.height = 2048; // default1024
-    light.shadow.camera.near = 0.5;    // default0.5
-    light.shadow.camera.far = 5000;
+
+    light.shadow.camera.near = 0.5;    // default0.5产生阴影的最近距离
+    light.shadow.camera.far = 5000; // 200产生阴影的最远距离
+    console.log(light.shadow.camera.left);
+    light.shadow.camera.left = -50; //产生阴影距离位置的最左边位置
+    light.shadow.camera.right = 20; //最右边
+    light.shadow.camera.top = 50; //最上边
+    light.shadow.camera.bottom = -50; //最下面
+
+    //这两个值决定使用多少像素生成阴影 默认512，值越大，阴影效果越好
+    light.shadow.mapSize.width = 4096;  // default512
+    light.shadow.mapSize.height = 4096; // default512
+
+
     light.shadow.camera.visible = true;
     scene.add(light);
     //环境光
@@ -73,7 +83,7 @@ function initLight() {
 }
 
 //地面
-var plane,planeSize = [20, 20];//地面大小
+var plane,planeSize = [50, 50];//地面大小
 function initPlane() {
     var geometry = new THREE.PlaneGeometry(planeSize[0], planeSize[1]);
     var material = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
@@ -287,12 +297,32 @@ function getPoints(box){
     ];
 }
 
-//移动场景scene
+/**
+ * 移动所有的盒子和角色的位置
+ * @param distance [x,y]
+ */
 function animateScene(distance) {
-    var _tween = new TWEEN.Tween(scene.position);
-    _tween.to({x:scene.position.x-distance[0],y:scene.position.y-distance[1],z:scene.position.z + distance[1]}, 750);
-    _tween.easing(TWEEN.Easing.Linear.None);//
-    _tween.start();
+    // boxList.forEach(function (box) {
+    //     var _tween = new TWEEN.Tween(box.position);
+    //     _tween.to({x: box.position.x - distance[0], y: box.position.y - distance[1], z: box.position.z}, 750);
+    //     _tween.easing(TWEEN.Easing.Linear.None);//
+    //     _tween.start();
+    //
+    //     _animate();
+    //     function _animate() {
+    //         requestNextAnimationFrame(_animate);
+    //         TWEEN.update();
+    //     }
+    //
+    //     _tween.onUpdate(function () {
+    //         box.position.set(this._object.x,this._object.y,this._object.z);
+    //         renderer.render(scene, camera);
+    //     });
+    // });
+    var role_tween = new TWEEN.Tween(role.position);
+    role_tween.to({x: role.position.x - distance[0], y: role.position.y - distance[1], z: role.position.z}, 750);
+    role_tween.easing(TWEEN.Easing.Linear.None);//
+    role_tween.start();
 
     _animate();
     function _animate() {
@@ -300,8 +330,8 @@ function animateScene(distance) {
         TWEEN.update();
     }
 
-    _tween.onUpdate(function () {
-        scene.position.set(this._object.x,this._object.y,this._object.z);
+    role_tween.onUpdate(function () {
+        role.position.set(this._object.x,this._object.y,this._object.z);
         renderer.render(scene, camera);
     });
 }
@@ -338,11 +368,10 @@ function nextStep(){
     _box = new Box({l: _box_size, w: _box_size, h: 1}, _position);
     _box.size = {l: _box_size, w: _box_size, h: 1};
     boxList.push(_box);
-    console.log(boxList);
     animateScene(prevBoxDistance);
-    setTimeout(function () {
+    // setTimeout(function () {
         animateBox(_box, 2, 0.52);
-    },750);
+    // },750);
 }
 
 //计算当前动画的帧数率
@@ -374,35 +403,36 @@ function init() {
     start();
     //监听鼠标滚动事件，改变相机fov值
     _container.addEventListener('mousewheel', mousewheel, false);
-    //监听鼠标拖动事件，旋转场景
-    _container.addEventListener('mousedown',function(ev) {
-        moveCamera = true;
-        mouseDownY = ev.pageY;
-        mouseDownX = ev.pageX;
-    });
-    _container.addEventListener('mouseup',function(ev) {
-        moveCamera = false;
-    });
-    _container.addEventListener('mousemove',function(ev) {
-        if(moveCamera) {
-            var zeroPoint = new THREE.Vector3(0, 0, 0);
-            var mouseMoveY = ev.pageY;
-            var mouseMoveX = ev.pageX;
-            xarf = (mouseMoveX - mouseDownX)/1000; // 角度
-            yarf = (mouseMoveY - mouseDownY)/1000;
-            // camera.position.z = cameraRound *(Math.cos(xarf));
-            // camera.position.x = cameraRound *(Math.sin(xarf));
-            // camera.position.y = cameraRound *(Math.sin(yarf));
-            
-            scene.rotation.x = scene.rotation.x + yarf;
-            scene.rotation.z = scene.rotation.z + xarf;
-
-            // console.log(scene.rotation)
-            // camera.lookAt = zeroPoint;
-            // camera.updateProjectionMatrix();
-            renderer.render(scene, camera);
-        }
-    });
+    // //监听鼠标拖动事件，旋转场景
+    // _container.addEventListener('mousedown',function(ev) {
+    //     moveCamera = true;
+    //     mouseDownY = ev.pageY;
+    //     mouseDownX = ev.pageX;
+    // });
+    // _container.addEventListener('mouseup',function(ev) {
+    //     moveCamera = false;
+    // });
+    // _container.addEventListener('mousemove',function(ev) {
+    //     if(moveCamera) {
+    //         var zeroPoint = new THREE.Vector3(0, 0, 0);
+    //         var mouseMoveY = ev.pageY;
+    //         var mouseMoveX = ev.pageX;
+    //         xarf = (mouseMoveX - mouseDownX)/1000; // 角度
+    //         yarf = (mouseMoveY - mouseDownY)/1000;
+    //         // camera.position.z = cameraRound *(Math.cos(xarf));
+    //         // camera.position.x = cameraRound *(Math.sin(xarf));
+    //         // camera.position.y = cameraRound *(Math.sin(yarf));
+    //
+    //         scene.rotation.x = scene.rotation.x + yarf;
+    //         console.log(scene.rotation.x);
+    //         scene.rotation.z = scene.rotation.z + xarf;
+    //
+    //         // console.log(scene.rotation)
+    //         // camera.lookAt = zeroPoint;
+    //         // camera.updateProjectionMatrix();
+    //         renderer.render(scene, camera);
+    //     }
+    // });
 }
 
 function mousewheel(e) {
@@ -438,12 +468,13 @@ function start(){
     dir = 0;
     score = 0;
     document.getElementById('score').innerText = score;
-    var _box = new Box({l: 2, w: 2, h: 1}, {x: 0, y: 0, z: 2.5});
+
+    var _box = new Box({l: 2, w: 2, h: 1}, {x: -1, y: -1, z: 2.5});
     _box.size = {l: 2, w: 2, h: 1};
     boxList.push(_box);
     animateBox(_box, _box.size.h/2, _box.size.h/2);
 
-    _box = new Box({l: 2, w: 2, h: 1}, {x: 2, y: -5, z: 2.5});
+    _box = new Box({l: 2, w: 2, h: 1}, {x: 2, y: 2, z: 2.5});
     _box.size = {l: 2, w: 2, h: 1};
     boxList.push(_box);
     animateBox(_box, _box.size.h/2, _box.size.h/2);
@@ -547,20 +578,20 @@ var jump = {
             }
         }
         else {
-            // _container.onmousedown = function (e) {
-            //     this.downStartTime = +new Date();
-            //     isScale = true;
-            //     scaleMesh();//蓄力压缩盒子和角色
-            //     e.preventDefault();
-            // }
-            // _container.onmouseup = function (e) {
-            //     this.distanceTime = +new Date() - this.downStartTime;
-            //     isScale = false;
-            //     resetMesh();//恢复被压缩到盒子和角色
-            //     if(canJump){
-            //         animateRole(role, this.distanceTime);
-            //     }
-            // }
+            _container.onmousedown = function (e) {
+                this.downStartTime = +new Date();
+                isScale = true;
+                scaleMesh();//蓄力压缩盒子和角色
+                e.preventDefault();
+            }
+            _container.onmouseup = function (e) {
+                this.distanceTime = +new Date() - this.downStartTime;
+                isScale = false;
+                resetMesh();//恢复被压缩到盒子和角色
+                if(canJump){
+                    animateRole(role, this.distanceTime);
+                }
+            }
         }
         document.getElementById('restart').onclick = function (e) {
             e.target.parentNode.style.display = 'none';
