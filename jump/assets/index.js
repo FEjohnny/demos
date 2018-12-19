@@ -414,7 +414,7 @@ function init() {
     initLight();
     start();
     //监听鼠标滚动事件，改变相机fov值
-    _container.addEventListener('mousewheel', mousewheel, false);
+    // _container.addEventListener('mousewheel', mousewheel, false);
     //监听鼠标拖动事件，旋转场景
     // _container.addEventListener('mousedown',function(ev) {
     //     moveCamera = true;
@@ -495,6 +495,9 @@ function start() {
 function restart() {
     scene.children = [];
     group.children = [];
+    group.position.x = 0;
+    group.position.y = 0;
+    group.position.z = 0;
     scene.add(group);
     initLight();
     initPlane();
