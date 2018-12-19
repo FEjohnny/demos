@@ -106,8 +106,8 @@ var role, _head, _body;
 var _material = [];
 var base_url = '../assets/materials/',
     load_materialss = ['bag.png', 'dict.png', 'disk.png', 'disk_dark.png', 'door.png', 'emotion.png', 'express.png', 'gift.png',
-    'glow_bag.png', 'golf_bottom.png', 'golf_top.png', 'gray.png', 'green.png', 'green_face.png', 'head.png', 'medicine.png', 'money.png',
-    'well.png', 'westore.png', 'westore_desk.png', 'white_face.png'];
+        'glow_bag.png', 'golf_bottom.png', 'golf_top.png', 'gray.png', 'green.png', 'green_face.png', 'head.png', 'medicine.png', 'money.png',
+        'well.png', 'westore.png', 'westore_desk.png', 'white_face.png'];
 
 function initLoader() {
     // var material = new THREE.MeshLambertMaterial({color: 0x000000, side: THREE.DoubleSide});
@@ -134,7 +134,7 @@ function initLoader() {
     // });
 
     // 同步加载纹理
-    for(var i = 0; i < load_materialss.length; i++) {
+    for (var i = 0; i < load_materialss.length; i++) {
         var texture = THREE.ImageUtils.loadTexture(base_url + load_materialss[i]);
         _material.push(new THREE.MeshLambertMaterial({color: 0x999999, map: texture}));
     }
@@ -164,7 +164,7 @@ function initLoader() {
         animateBox(role, 3, 1.4);
         document.getElementById("loadingText").style.display = 'none';
         document.getElementById("start").style.display = 'inline-block';
-    },0);
+    }, 0);
 }
 
 document.getElementById('start').onclick = function (e) {
@@ -237,10 +237,10 @@ function animateRole(role, pow) {
         ry: role.rotation.y,
         rz: role.rotation.z
     });
-    if(dir === 0 ) { // 向x轴正向移动
+    if (dir === 0) { // 向x轴正向移动
         _tween.to({
-            x: role.position.x + pow / 200,
-            y: role.position.y,
+            x: role.position.x + pow / 150,
+            y: boxList[activeIndex].position.y - 1,
             z: [role.position.z + pow / 200, 1.5],
             rx: role.rotation.x,
             ry: role.rotation.y,
@@ -248,7 +248,7 @@ function animateRole(role, pow) {
         }, 500);
     } else {
         _tween.to({
-            x: role.position.x,
+            x: boxList[activeIndex].position.x,
             y: role.position.y + pow / 200,
             z: [role.position.z + pow / 200, 1.5],
             rx: role.rotation.x,
@@ -276,12 +276,13 @@ function animateRole(role, pow) {
             nextStep();
         }
         else {
-            animateBox(role, role.position.z, 0);
+            animateBox(role, role.position.z, 0.4);
             setTimeout(function () {
                 document.getElementById('restartwrap').style.display = 'block';
             }, 1000);
         }
-    }).easing(TWEEN.Easing.Linear.None).start();;
+    }).easing(TWEEN.Easing.Linear.None).start();
+    ;
 
     animate();
     function animate() {
@@ -292,49 +293,22 @@ function animateRole(role, pow) {
 
 //检查跳跃后的结果
 function check() {
-    var points = getPoints(boxList[activeIndex]),
+    var points = getPoints(boxList[activeIndex]), //上左，上右，下右，下左
         result = true;
     //判断落点是否在下一个box上
-    return true;
-    outer:
-        for (var i = 0; i < points.length; i++) {
-            var p = points[i];
-            switch (i) {
-                case 0:
-                    if (role.position.x > p[0] && role.position.y < p[1]) {
-                        break;
-                    }
-                    else {
-                        result = false;
-                        break outer;
-                    }
-                case 1:
-                    if (role.position.x < p[0] && role.position.y < p[1]) {
-                        break;
-                    }
-                    else {
-                        result = false;
-                        break outer;
-                    }
-                case 2:
-                    if (role.position.x > p[0] && role.position.y > p[1]) {
-                        break;
-                    }
-                    else {
-                        result = false;
-                        break outer;
-                    }
-                case 3:
-                    if (role.position.x < p[0] && role.position.y > p[1]) {
-                        break;
-                    }
-                    else {
-                        result = false;
-                        break outer;
-                    }
-            }
+    if(dir === 0) { // x轴移动，只需要判断x值是否在盒子上
+        if(role.position.x > points[0][0] && role.position.x < points[1][0]) {
+            result = true;
+        } else {
+            result = false;
         }
-    ;
+    } else {
+        if(role.position.y+1 < points[0][1] && role.position.y+1 > points[2][1]) {
+            result = true;
+        } else {
+            result = false;
+        }
+    }
     return result;
 }
 
@@ -406,9 +380,9 @@ function nextStep() {
     _box.size = {l: _box_size, w: _box_size, h: 1};
     boxList.push(_box);
     animateScene(prevBoxDistance);
-    // setTimeout(function () {
-    animateBox(_box, 2, 0.52);
-    // },750);
+    setTimeout(function () {
+        animateBox(_box, 2, 0.52);
+    },750);
 }
 
 //计算当前动画的帧数率
@@ -520,7 +494,8 @@ function start() {
 
 function restart() {
     scene.children = [];
-    scene.position.set(0, 0, 0);
+    group.children = [];
+    scene.add(group);
     initLight();
     initPlane();
     initLoader();
@@ -532,7 +507,6 @@ var isScale = false;
 
 function scaleMesh() {
     //跳跃前，蓄力压缩角色和box
-    console.log(_body.scale.y);
     if (isScale && boxList[activeIndex].scale.z > 0.5) {
         boxList[activeIndex].scale.set(1, 1, boxList[activeIndex].scale.z - 0.005);
         boxList[activeIndex].position.set(
@@ -563,13 +537,18 @@ function resetMesh() {
     mesh_tween_pos.easing(TWEEN.Easing.Linear.None);
     mesh_tween_pos.start();
 
-    var role_tween_scale = new TWEEN.Tween(role.scale);
-    role_tween_scale.to({z: 1}, 0);
-    role_tween_scale.easing(TWEEN.Easing.Linear.None);
-    role_tween_scale.start();
+    var _body_tween_scale = new TWEEN.Tween(_body.scale);
+    _body_tween_scale.to({y: 1}, 0);
+    _body_tween_scale.easing(TWEEN.Easing.Linear.None);
+    _body_tween_scale.start();
+
+    var _head_tween_pos = new TWEEN.Tween(_head.position);
+    _head_tween_pos.to({z: 0.7}, 0);
+    _head_tween_pos.easing(TWEEN.Easing.Linear.None);
+    _head_tween_pos.start();
 
     var role_tween_pos = new TWEEN.Tween(role.position);
-    role_tween_pos.to({z: 2}, 0);
+    role_tween_pos.to({z: 1.4}, 0);
     role_tween_pos.easing(TWEEN.Easing.Linear.None);
     role_tween_pos.start();
 
@@ -592,11 +571,17 @@ function resetMesh() {
     }).onComplete(function () {
         TWEEN.remove(mesh_tween_pos);
     });
-    role_tween_scale.onUpdate(function () {
-        role.scale.z = this._object.z;
+    _body_tween_scale.onUpdate(function () {
+        _body.scale.y = this._object.y;
         renderer.render(scene, camera);
     }).onComplete(function () {
-        TWEEN.remove(role_tween);
+        TWEEN.remove(_body_tween_scale);
+    });
+    _head_tween_pos.onUpdate(function () {
+        _head.position.z = this._object.z;
+        renderer.render(scene, camera);
+    }).onComplete(function () {
+        TWEEN.remove(_head_tween_pos);
     });
     role_tween_pos.onUpdate(function () {
         role.position.z = this._object.z;
@@ -638,10 +623,10 @@ var jump = {
             _container.onmouseup = function (e) {
                 this.distanceTime = +new Date() - this.downStartTime;
                 isScale = false;
-                // resetMesh();//恢复被压缩到盒子和角色
-                // if (canJump) {
-                //     animateRole(role, this.distanceTime);
-                // }
+                resetMesh();//恢复被压缩到盒子和角色
+                if (canJump) {
+                    animateRole(role, this.distanceTime);
+                }
             }
         }
         document.getElementById('restart').onclick = function (e) {
