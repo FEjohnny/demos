@@ -1,7 +1,3 @@
-/**
- * Created by 陈俊 on 2018/3/27.
- */
-
 var _clientWidth = document.getElementById('container').clientWidth,
     _clientHeight = document.getElementById('container').clientHeight,
     _container = document.getElementById('container'),
