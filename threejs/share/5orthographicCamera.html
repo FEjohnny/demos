@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="../threejs-source/build/three.min.js"></script>
+    <!--相机控制-->
+    <script src="../threejs-source/utils/OrbitControls.js"></script>
+    <!--性能监听-->
+    <script src="../threejs-source/utils/stats.min.js"></script>
+    <!--性能监听-->
+    <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <title>正交相机--鼠标控制</title>
+</head>
+<body>
+
+<script>
+    var scene = new THREE.Scene();  // 场景
+
+    var camera = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 100);
+    // camera.lookAt(new THREE.Vector3(Controls.lookX,Controls.lookY,Controls.lookZ));
+    var renderer = new THREE.WebGLRenderer();   // 渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
+    document.body.appendChild(renderer.domElement);
+
+    // 添加元素
+    function addObject() {
+        // var material = new THREE.LineBasicMaterial({
+        //     color: 0xFF0000 // red
+        // });
+        // var geometry = new THREE.Geometry();
+        // geometry.vertices.push(
+        //     new THREE.Vector3(-100, 0, 0),
+        //     new THREE.Vector3(100, 0, 0),
+        // );
+        // var line = new THREE.Line(geometry, material);
+        // scene.add(line); // x轴
+        //
+        // material = new THREE.LineBasicMaterial({
+        //     color: 0xFFFF00 // yellow
+        // });
+        // geometry = new THREE.Geometry();
+        // geometry.vertices.push(
+        //     new THREE.Vector3(0, -100, 0),
+        //     new THREE.Vector3(0, 100, 0),
+        // );
+        // line = new THREE.Line(geometry, material);
+        // scene.add(line); // y轴
+        //
+        // material = new THREE.LineBasicMaterial({
+        //     color: 0x0000FF // purple
+        // });
+        // geometry = new THREE.Geometry();
+        // geometry.vertices.push(
+        //     new THREE.Vector3(0, 0, -100),
+        //     new THREE.Vector3(0, 0, 100),
+        // );
+        //
+        // line = new THREE.Line(geometry, material);
+        // scene.add(line); // z轴
+
+        // 添加物体到场景中
+        geometry = new THREE.BoxGeometry(10, 10, 10);  //几何体
+        material = new THREE.MeshNormalMaterial();
+        cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+        cube.position.set(-30, 0, -20);
+        scene.add(cube);
+
+        geometry1 = new THREE.CubeGeometry(10, 10, 10);
+        material1 = new THREE.MeshNormalMaterial();
+        cube1 = new THREE.Mesh(geometry1, material1);
+        scene.add(cube1);
+    }
+    addObject();
+
+    // //鼠标控制相机
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1, 0);
+    controls.update();
+    // 性能监听
+    var stats = new Stats();
+    document.body.appendChild(stats.dom);
+
+    // 循环渲染
+    function render() {
+        requestAnimationFrame(render);
+        stats.begin();
+        renderer.render(scene, camera);
+        stats.end();
+    }
+    render();
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        #overlay {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            background-color: #000000;
+            color: #ffffff;
+        }
+        #overlay span{
+            display: inline-block;
+            padding: 4px 10px;
+            border: 1px solid #fff;
+            cursor: pointer;
+        }
+    </style>
+    <script src="../threejs-source/build/three.min.js"></script>
+    <!--相机控制-->
+    <script src="../threejs-source/utils/OrbitControls.js"></script>
+    <!--性能监听-->
+    <script src="../threejs-source/utils/stats.min.js"></script>
+    <!--fbxloader-->
+    <script src="../threejs-source/loaders/inflate.min.js"></script>
+    <script src="../threejs-source/loaders/FBXLoader.js"></script>
+    <script src="../threejs-source/loaders/HDRCubeTextureLoader.js"></script>
+    <!--可视化属性调节-->
+    <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <title>loaders</title>
+</head>
+<body>
+
+<div id="overlay">
+    <span id="startButton">click me</span>
+</div>
+
+
+<script>
+    var startButton = document.getElementById( 'startButton' );
+    startButton.addEventListener( 'click', addSource );
+
+
+    var scene = new THREE.Scene();  // 场景
+
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);// 透视相机
+    camera.position.set(0,0, 10);
+    var renderer = new THREE.WebGLRenderer();   // 渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
+    document.body.appendChild(renderer.domElement);
+
+    // 添加3D模型
+    function addSource() {
+        var overlay = document.getElementById( 'overlay' );
+        overlay.remove();
+
+        // 加载纹理
+        var texture = new THREE.TextureLoader().load('../materials/bag.png');
+        // 立即使用纹理进行材质创建
+        var material = new THREE.MeshBasicMaterial( { map: texture } );
+        // 不发光材质，需要添加灯光，才能看见
+        // var material = new THREE.MeshLambertMaterial( { map: texture } );
+
+        // 初始化一个监听
+        var audioListener = new THREE.AudioListener();
+        // 把监听添加到camera
+        camera.add(audioListener);
+        // 初始化音频对象
+        var oceanAmbientSound = new THREE.Audio(audioListener);
+        // 添加一个音频对象到场景中
+        scene.add(oceanAmbientSound);
+        // 初始化一个加载器
+        var audioLoader = new THREE.AudioLoader();
+        // 加载资源
+        audioLoader.load(
+            // 资源URL
+            '../assets/scale_intro.mp3',
+            // onLoad回调
+            function (audioBuffer) {
+                // 给一个加载器对象设置音频对象的缓存
+                oceanAmbientSound.setBuffer( audioBuffer );
+                // 播放音频
+                oceanAmbientSound.setLoop(true);
+                oceanAmbientSound.setVolume(1);
+                oceanAmbientSound.play();
+                console.log(1);
+            },
+            // // onProgress回调
+            function ( xhr ) {
+                console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+            },
+            // // onError回调
+            function ( err ) {
+                console.log( 'An error happened' );
+            }
+        );
+
+        var loader = new THREE.FBXLoader(); // 3d模型loader
+        // 加载3D模型
+        loader.load("../assets/Samba Dancing.fbx", function (object) {
+            object.scale.set(0.05, 0.05, 0.05);
+            // object.rotation.x = Math.PI / 4;
+            object.position.set(0, -5, 0);
+            object.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    // 设置纹理
+                    // child.material = material;
+                }
+                child.color = 0x999999;
+            });
+            scene.add(object);
+        } );
+
+        loader.manager.onProgress = function (e) {
+            console.log(e);
+        }
+    }
+    function initLight() {
+        //方向光
+        var light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(180, -260, 290); // 200, -80, 280
+        light.castShadow = true;//开启投影
+        // light.target = plane;
+
+        light.shadow.camera.near = 0.5;    // default0.5产生阴影的最近距离
+        light.shadow.camera.far = 5000; // 200产生阴影的最远距离
+        light.shadow.camera.left = -50; //产生阴影距离位置的最左边位置
+        light.shadow.camera.right = 20; //最右边
+        light.shadow.camera.top = 50; //最上边
+        light.shadow.camera.bottom = -50; //最下面
+
+        //这两个值决定使用多少像素生成阴影 默认512，值越大，阴影效果越好
+        light.shadow.mapSize.width = 4096;  // default512
+        light.shadow.mapSize.height = 4096; // default512
+
+
+        light.shadow.camera.visible = true;
+        scene.add(light);
+        //环境光
+        light = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(light);
+    }
+    initLight();
+
+    //鼠标控制相机
+    var controls = new THREE.OrbitControls(camera);
+    // controls.target.set(0, 0, 1);
+    controls.update();
+    // 性能监听
+    var stats = new Stats();
+    document.body.appendChild(stats.dom);
+
+    // 循环渲染
+    function render() {
+        requestAnimationFrame(render);
+        stats.begin();
+        renderer.render(scene, camera);
+        stats.end();
+    }
+    render();
+</script>
+</body>
+</html>

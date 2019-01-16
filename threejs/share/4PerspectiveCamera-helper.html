@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="../threejs-source/build/three.min.js"></script>
+    <!--相机控制-->
+    <script src="../threejs-source/utils/OrbitControls.js"></script>
+    <!--性能监听-->
+    <script src="../threejs-source/utils/stats.min.js"></script>
+    <!--性能监听-->
+    <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <title>透视相机--helper</title>
+</head>
+<body>
+
+<script>
+    var Controls = new function () {
+        this.posX = 0;
+        this.posY = 5;
+        this.posZ = 5;
+        this.lookX = 0;
+        this.lookY = 0;
+        this.lookZ = 0;
+        this.fov = 45;
+        this.near = 2;
+        this.far = 8;
+        this.width = window.innerWidth;
+        this.height =  window.innerHeight;
+    }
+    //生成gui并添加参数
+    var gui = new dat.GUI();
+    gui.add(Controls, "posX", -20, 20);
+    gui.add(Controls, "posY", -20, 20);
+    gui.add(Controls, "posZ", -20, 20);
+    gui.add(Controls, "lookX", -20, 20);
+    gui.add(Controls, "lookY", -20, 20);
+    gui.add(Controls, "lookZ", -20, 20);
+    gui.add(Controls, "fov", 0, 150);
+    gui.add(Controls, "near", 0, 10);
+    gui.add(Controls, "far", 0, 8);
+    gui.add(Controls, "width", 0, window.innerWidth * 2);
+    gui.add(Controls, "height", 0, window.innerHeight * 2);
+
+    var scene = new THREE.Scene();  // 场景
+
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2500);// 透视相机
+    camera.position.set(10,10,10);
+    camera.lookAt(new THREE.Vector3(0,0,0));
+
+    var cameraHelper = new THREE.PerspectiveCamera(Controls.fov, Controls.width / Controls.height, Controls.near, Controls.far);
+    cameraHelper.position.set(Controls.posX, Controls.posY, Controls.posZ);
+    cameraHelper.lookAt(new THREE.Vector3(10,0,0))
+    var cameraPerspectiveHelper = new THREE.CameraHelper( cameraHelper );
+
+    var renderer = new THREE.WebGLRenderer();   // 渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
+    document.body.appendChild(renderer.domElement);
+
+    scene.add( cameraPerspectiveHelper );
+    // 性能监听
+    var stats = new Stats();
+    document.body.appendChild(stats.dom);
+
+    // 循环渲染
+    function render() {
+        requestAnimationFrame(render);
+        cameraHelper = new THREE.PerspectiveCamera(Controls.fov, Controls.width / Controls.height, Controls.near, Controls.far);
+        cameraHelper.position.set(Controls.posX, Controls.posY, Controls.posZ);
+        cameraHelper.lookAt(new THREE.Vector3(Controls.lookX,Controls.lookY,Controls.lookZ))
+        cameraPerspectiveHelper = new THREE.CameraHelper( cameraHelper );
+        scene.children.splice(scene.children.length - 1, 1);
+        scene.add( cameraPerspectiveHelper );
+        stats.begin();
+        renderer.render(scene, camera);
+        stats.end();
+    }
+    render();
+</script>
+</body>
+</html>
