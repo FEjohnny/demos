@@ -43,6 +43,7 @@
     <script src="../threejs-source/loaders/HDRCubeTextureLoader.js"></script>
     <!--可视化属性调节-->
     <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <script src="../assets/requestAnimationFrame.js"></script>
     <title>loaders</title>
 </head>
 <body>
@@ -75,9 +76,9 @@
         // 立即使用纹理进行材质创建
         var material = new THREE.MeshBasicMaterial( { map: texture } );
         // 不发光材质，需要添加灯光，才能看见
-        // var material = new THREE.MeshLambertMaterial( { map: texture } );
+        var material = new THREE.MeshLambertMaterial( { map: texture } );
 
-        // 初始化一个监听
+        // // 初始化一个监听
         var audioListener = new THREE.AudioListener();
         // 把监听添加到camera
         camera.add(audioListener);
@@ -122,7 +123,7 @@
                     child.castShadow = true;
                     child.receiveShadow = true;
                     // 设置纹理
-                    // child.material = material;
+                    child.material = material;
                 }
                 child.color = 0x999999;
             });

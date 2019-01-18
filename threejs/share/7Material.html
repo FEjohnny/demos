@@ -20,7 +20,7 @@
     <!--可视化属性调节-->
     <script src="../threejs-source/utils/dat.gui.min.js"></script>
     <script src="../assets/requestAnimationFrame.js"></script>
-    <title>几何体</title>
+    <title>材质</title>
 </head>
 <body>
 
@@ -33,58 +33,14 @@
     renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
     document.body.appendChild(renderer.domElement);
 
-    // 画坐标轴
-    function line() {
-        var material = new THREE.LineBasicMaterial({
-            color: 0xFF0000 // red
-        });
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-            new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(10, 0, 0),
-        );
-        var line = new THREE.Line(geometry, material);
-        scene.add(line); // x轴
-
-        material = new THREE.LineBasicMaterial({
-            color: 0xFFFF00 // yellow
-        });
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(
-            new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(0, 10, 0),
-        );
-        line = new THREE.Line(geometry, material);
-        scene.add(line); // y轴
-
-        material = new THREE.LineBasicMaterial({
-            color: 0x0000FF // purple
-        });
-        geometry = new THREE.Geometry();
-        geometry.vertices.push(
-            new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(0, 0, 10),
-        );
-
-        line = new THREE.Line(geometry, material);
-        scene.add(line); // z轴
-    }
-    line();
-
-    // 添加平面
-    function addPlane() {
-        var geometry = new THREE.PlaneGeometry( 20, 20);
-        var material = new THREE.MeshNormalMaterial( {color: 0x1931c3, side: THREE.DoubleSide} );
-        var plane = new THREE.Mesh( geometry, material );
-        plane.position.set(0, 0, -10);
-        scene.add(plane);
-    }
-    addPlane();
-    
     // 添加立方几何体
     function addBox() {
         var geometry = new THREE.BoxGeometry( 5, 5, 5, 2, 2,2);
-        var material = new THREE.MeshNormalMaterial( {color: 0x1c99a2} );
+        // var material = new THREE.MeshBasicMaterial( {color: 0x1c99a2} );
+        var material = new THREE.MeshLambertMaterial( {color: 0x1c99a2} );
+        // var material = new THREE.MeshDepthMaterial();
+        // var material = new THREE.MeshNormalMaterial();
+        // var material = new THREE.MeshPhongMaterial();
         var cube = new THREE.Mesh( geometry, material );
         scene.add( cube );
     }

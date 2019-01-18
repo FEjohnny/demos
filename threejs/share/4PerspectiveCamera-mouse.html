@@ -19,6 +19,7 @@
     <script src="../threejs-source/utils/stats.min.js"></script>
     <!--性能监听-->
     <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <script src="../assets/requestAnimationFrame.js"></script>
     <title>透视相机--鼠标控制</title>
 </head>
 <body>
@@ -72,7 +73,7 @@
 
     // //鼠标控制相机
     var controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.target.set(5, 0, 0); // 设置相机的lookAt
+    controls.target.set(2, 0, 0); // 设置相机的lookAt
     controls.update();
     // 性能监听
     var stats = new Stats();

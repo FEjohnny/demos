@@ -19,6 +19,7 @@
     <script src="../threejs-source/utils/stats.min.js"></script>
     <!--可视化属性调节-->
     <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <script src="../assets/requestAnimationFrame.js"></script>
     <title>灯光</title>
 </head>
 <body>
@@ -31,7 +32,7 @@
     // scene.background = 0xFFB6C1;
 
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);// 透视相机
-    camera.position.set(0,0, 20);
+    camera.position.set(0, 0, 20);
     var renderer = new THREE.WebGLRenderer();   // 渲染器
 
     renderer.shadowMap.enabled = true;//渲染投影
@@ -79,39 +80,47 @@
         line = new THREE.Line(geometry, material);
         scene.add(line); // z轴
     }
+
     line();
 
     // 添加平面
     var plane;
+
     function addPlane() {
         var geometry = new THREE.PlaneGeometry(30, 30, 32);
-        var material = new THREE.MeshLambertMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-        plane = new THREE.Mesh( geometry, material );
+        var material = new THREE.MeshLambertMaterial({color: 0x1931c3, side: THREE.DoubleSide});
+        // var material = new THREE.ShadowMaterial({color: 0x1931c3, side: THREE.DoubleSide});
+        plane = new THREE.Mesh(geometry, material);
         plane.receiveShadow = true;//接收投影
         scene.add(plane);
     }
 
     addPlane();
-    
+
     // 添加立方几何体
     function addBox() {
-        var geometry = new THREE.BoxGeometry( 3, 3, 3, 2, 2,2);
-        var material = new THREE.MeshLambertMaterial( {color: 0x00ff00} );
-        var cube = new THREE.Mesh( geometry, material );
+        var geometry = new THREE.BoxGeometry(3, 3, 3, 2, 2, 2);
+        // var material = new THREE.MeshBasicMaterial( {color: 0x1c99a2} );
+        var material = new THREE.MeshLambertMaterial( {color: 0x1c99a2} );
+        // var material = new THREE.MeshDepthMaterial();
+        // var material = new THREE.MeshNormalMaterial();
+        var material = new THREE.MeshPhongMaterial();
+        var cube = new THREE.Mesh(geometry, material);
         cube.castShadow = true;//开启投影
         cube.receiveShadow = true;//接收投影
-        cube.position.set(0,0,3);
-        scene.add( cube );
+        cube.position.set(0, 0, 3);
+        scene.add(cube);
     }
+
     addBox();
 
     function initLight() {
-        //环境光
+        // //环境光
         light = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(light);
         //方向光
         var light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(180, -260, 290); // 200, -80, 280
+        light.position.set(180, 260, 290); // 200, -80, 280
         light.castShadow = true;//开启投影
         light.target = plane; // 投影到哪里
 
@@ -127,8 +136,8 @@
 
         light.shadow.camera.visible = true;
         scene.add(light);
-
     }
+
     initLight();
 
     //鼠标控制相机
@@ -146,6 +155,7 @@
         renderer.render(scene, camera);
         stats.end();
     }
+
     render();
 </script>
 </body>
