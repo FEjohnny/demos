@@ -1,0 +1,23 @@
+{
+    "name": "node",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "script": {
+        "test": "./node_modules/.bin/_mocha"
+    },
+    "dependencies": {
+        "should": "^13.2.3"
+    },
+    "devDependencies": {
+        "istanbul": "^0.4.5",
+        "mocha": "^6.1.4"
+    },
+    "scripts": {
+        "test": "mocha",
+        "testWithShould": "NODE_ENV=test ./node_modules/.bin/_mocha --require should",
+        "cover": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --delay"
+    },
+    "author": "",
+    "license": "ISC"
+}
