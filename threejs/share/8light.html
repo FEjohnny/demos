@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="../threejs-source/build/three.min.js"></script>
+    <!--相机控制-->
+    <script src="../threejs-source/utils/OrbitControls.js"></script>
+    <!--性能监听-->
+    <script src="../threejs-source/utils/stats.min.js"></script>
+    <!--可视化属性调节-->
+    <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <script src="../assets/requestAnimationFrame.js"></script>
+    <title>灯光</title>
+</head>
+<body>
+
+<script>
+    var scene = new THREE.Scene();  // 场景
+    scene.rotation.x = -Math.PI / 4;
+    scene.rotation.z = Math.PI / 4;
+    // scene.position.set(0, 0, 0);
+    // scene.background = 0xFFB6C1;
+
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);// 透视相机
+    camera.position.set(0, 0, 20);
+    var renderer = new THREE.WebGLRenderer();   // 渲染器
+
+    renderer.shadowMap.enabled = true;//渲染投影
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 更加柔和的阴影,默认的是THREE.PCFShadowMap
+    renderer.shadowMap.soft = true;
+    renderer.shadowMap.height = 1024 * 4;
+    renderer.shadowMap.width = 1024 * 4;
+
+    renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
+    document.body.appendChild(renderer.domElement);
+
+    // 画坐标轴
+    function line() {
+        var material = new THREE.LineBasicMaterial({
+            color: 0xFF0000 // red
+        });
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(10, 0, 0),
+        );
+        var line = new THREE.Line(geometry, material);
+        scene.add(line); // x轴
+
+        material = new THREE.LineBasicMaterial({
+            color: 0xFFFF00 // yellow
+        });
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 10, 0),
+        );
+        line = new THREE.Line(geometry, material);
+        scene.add(line); // y轴
+
+        material = new THREE.LineBasicMaterial({
+            color: 0x0000FF // purple
+        });
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, 10),
+        );
+
+        line = new THREE.Line(geometry, material);
+        scene.add(line); // z轴
+    }
+
+    line();
+
+    // 添加平面
+    var plane;
+
+    function addPlane() {
+        var geometry = new THREE.PlaneGeometry(30, 30, 32);
+        var material = new THREE.MeshLambertMaterial({color: 0x1931c3, side: THREE.DoubleSide});
+        // var material = new THREE.ShadowMaterial({color: 0x1931c3, side: THREE.DoubleSide});
+        plane = new THREE.Mesh(geometry, material);
+        plane.receiveShadow = true;//接收投影
+        scene.add(plane);
+    }
+
+    addPlane();
+
+    // 添加立方几何体
+    function addBox() {
+        var geometry = new THREE.BoxGeometry(3, 3, 3, 2, 2, 2);
+        // var material = new THREE.MeshBasicMaterial( {color: 0x1c99a2} );
+        var material = new THREE.MeshLambertMaterial( {color: 0x1c99a2} );
+        // var material = new THREE.MeshDepthMaterial();
+        // var material = new THREE.MeshNormalMaterial();
+        var material = new THREE.MeshPhongMaterial();
+        var cube = new THREE.Mesh(geometry, material);
+        cube.castShadow = true;//开启投影
+        cube.receiveShadow = true;//接收投影
+        cube.position.set(0, 0, 3);
+        scene.add(cube);
+    }
+
+    addBox();
+
+    function initLight() {
+        // //环境光
+        light = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(light);
+        //方向光
+        var light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(180, 260, 290); // 200, -80, 280
+        light.castShadow = true;//开启投影
+        light.target = plane; // 投影到哪里
+
+        light.shadow.camera.near = 0.5;    // default0.5产生阴影的最近距离
+        light.shadow.camera.far = 5000; // 200产生阴影的最远距离
+        light.shadow.camera.left = -50; //产生阴影距离位置的最左边位置
+        light.shadow.camera.right = 20; //最右边
+        light.shadow.camera.top = 50; //最上边
+        light.shadow.camera.bottom = -50; //最下面
+        //这两个值决定使用多少像素生成阴影 默认512，值越大，阴影效果越好
+        light.shadow.mapSize.width = 4096;  // default512
+        light.shadow.mapSize.height = 4096; // default512
+
+        light.shadow.camera.visible = true;
+        scene.add(light);
+    }
+
+    initLight();
+
+    //鼠标控制相机
+    var controls = new THREE.OrbitControls(camera);
+    // controls.target.set(0, 0, 1);
+    controls.update();
+    // 性能监听
+    var stats = new Stats();
+    document.body.appendChild(stats.dom);
+
+    // 循环渲染
+    function render() {
+        requestAnimationFrame(render);
+        stats.begin();
+        renderer.render(scene, camera);
+        stats.end();
+    }
+
+    render();
+</script>
+</body>
+</html>

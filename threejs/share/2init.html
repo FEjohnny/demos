@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="../threejs-source/build/three.min.js"></script>
+    <title>初始化</title>
+</head>
+<body>
+<script>
+    var scene = new THREE.Scene();  // 场景
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);// 透视相机
+    var renderer = new THREE.WebGLRenderer();   // 渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
+    document.body.appendChild(renderer.domElement); // 将渲染画布挂在到body下面
+    // 开始渲染
+    renderer.render(scene, camera);
+</script>
+</body>
+</html>

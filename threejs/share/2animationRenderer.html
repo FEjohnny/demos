@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../threejs-source/build/three.min.js"></script>
+    <script src="../assets/requestAnimationFrame.js"></script>
+    <title>动画（循环渲染）</title>
+</head>
+<body>
+
+<script>
+    var scene = new THREE.Scene();  // 场景
+
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);// 透视相机
+    camera.position.z = 5;
+
+    var renderer = new THREE.WebGLRenderer();   // 渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
+    document.body.appendChild(renderer.domElement);
+
+
+    // 添加物体到场景中
+    var geometry = new THREE.CubeGeometry(1,1,1);
+    var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+    var cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    // 循环渲染
+    function render() {
+        requestAnimationFrame(render);
+        cube.rotation.x += 0.1;
+        cube.rotation.y += 0.1;
+        renderer.render(scene, camera);
+    }
+    render();
+</script>
+</body>
+</html>

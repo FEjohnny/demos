@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="../threejs-source/build/three.min.js"></script>
+    <!--相机控制-->
+    <script src="../threejs-source/utils/OrbitControls.js"></script>
+    <!--性能监听-->
+    <script src="../threejs-source/utils/stats.min.js"></script>
+    <!--可视化属性调节-->
+    <script src="../threejs-source/utils/dat.gui.min.js"></script>
+    <script src="../assets/requestAnimationFrame.js"></script>
+    <title>材质</title>
+</head>
+<body>
+
+<script>
+    var scene = new THREE.Scene();  // 场景
+
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);// 透视相机
+    camera.position.set(0,0, 20);
+    var renderer = new THREE.WebGLRenderer();   // 渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight);    // 设置渲染器的大小为窗口的内宽度，也就是内容区的宽度
+    document.body.appendChild(renderer.domElement);
+
+    // 添加立方几何体
+    function addBox() {
+        var geometry = new THREE.BoxGeometry( 5, 5, 5, 2, 2,2);
+        // var material = new THREE.MeshBasicMaterial( {color: 0x1c99a2} );
+        var material = new THREE.MeshLambertMaterial( {color: 0x1c99a2} );
+        // var material = new THREE.MeshDepthMaterial();
+        // var material = new THREE.MeshNormalMaterial();
+        // var material = new THREE.MeshPhongMaterial();
+        var cube = new THREE.Mesh( geometry, material );
+        scene.add( cube );
+    }
+    addBox();
+
+    // 鼠标控制相机
+    var controls = new THREE.OrbitControls(camera);
+    controls.target.set(0, 0, 0);
+    controls.update();
+    // 性能监听
+    var stats = new Stats();
+    document.body.appendChild(stats.dom);
+
+    // 循环渲染
+    function render() {
+        requestAnimationFrame(render);
+        stats.begin();
+        renderer.render(scene, camera);
+        stats.end();
+    }
+    render();
+</script>
+</body>
+</html>
