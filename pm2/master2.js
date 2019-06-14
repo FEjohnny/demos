@@ -31,6 +31,7 @@ for(var i = 0; i < cpus.length; i ++) {
 // 主进程退出，同时退出工作进程
 process.on('exit', function () {
     for (var pid in workers) {
+        console.log('child exit: ' + pid);
         workers[pid].kill();
     }
 })

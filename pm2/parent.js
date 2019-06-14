@@ -10,7 +10,7 @@ server.listen(8000, function () {
     child2.send('server', server);
     child3.send('server', server);
     child4.send('server', server);
-    server.close();
+    server.close();  改良版本
 });
 
 
